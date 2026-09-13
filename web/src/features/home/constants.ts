@@ -20,7 +20,13 @@ For commercial licensing, please contact support@quantumnous.com
  * Home page constants
  * All hardcoded data for home page sections
  */
-import { type TFunction } from 'i18next'
+import type { TFunction } from 'i18next'
+
+export const HOME_NAV_LINKS = [
+  { title: 'Home', href: '/' },
+  { title: 'Console', href: '/dashboard' },
+  { title: 'Model Square', href: '/pricing' },
+] as const
 
 // Layout - Main base classes
 export const MAIN_BASE_CLASSES = 'bg-background text-foreground w-full'

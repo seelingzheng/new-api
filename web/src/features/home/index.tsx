@@ -28,15 +28,8 @@ import { isLikelyHtml } from '@/lib/content-format'
 import { useAuthStore } from '@/stores/auth-store'
 
 import { CTA, Hero, HowItWorks, Stats } from './components'
+import { HOME_NAV_LINKS } from './constants'
 import { useHomePageContent } from './hooks'
-
-const homeNavLinks = [
-  { title: '价格', href: '#pricing', external: true },
-  { title: '模型', href: '#pricing', external: true },
-  { title: '稳定性', href: '#howto', external: true },
-  { title: '保障', href: '#howto', external: true },
-  { title: '使用流程', href: '#howto', external: true },
-] as const
 
 export function Home() {
   const { i18n, t } = useTranslation()
@@ -132,7 +125,7 @@ export function Home() {
   return (
     <PublicLayout
       showMainContainer={false}
-      navLinks={[...homeNavLinks]}
+      navLinks={[...HOME_NAV_LINKS]}
       logo={
         <img
           src='/nextoken-logo.png'

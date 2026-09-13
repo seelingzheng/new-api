@@ -2,7 +2,9 @@ FROM oven/bun:1.4.0@sha256:5ff609364c049b54eb0ff560ec96319729a972078ef2c755d758f
 
 WORKDIR /build/web
 COPY web/package.json web/bun.lock ./
-RUN bun install --frozen-lockfile
+# Use mirrors that are reachable from the deployment network. The lockfile
+# still verifies package integrity; only the download endpoint changes.
+RUN bun install --frozen-lockfile --registry=https://registry.npmmirror.com
 COPY ./web ./
 COPY ./VERSION /build/VERSION
 RUN DISABLE_ESLINT_PLUGIN='true' VITE_REACT_APP_VERSION=$(cat /build/VERSION) bun run build
@@ -21,6 +23,8 @@ ADD go.mod go.sum ./
 # relaykit is a local submodule referenced via replace; its go.mod must be
 # present for go mod download to resolve the main module graph.
 ADD relaykit/go.mod ./relaykit/go.mod
+# Keep module resolution through a regional proxy, with direct fallback.
+ENV GOPROXY=https://goproxy.cn,direct
 RUN go mod download
 
 COPY . .
