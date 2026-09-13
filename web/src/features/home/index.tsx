@@ -16,6 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { Link } from '@tanstack/react-router'
 import { useCallback, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -26,8 +27,16 @@ import { useTheme } from '@/context/theme-provider'
 import { isLikelyHtml } from '@/lib/content-format'
 import { useAuthStore } from '@/stores/auth-store'
 
-import { CTA, Features, Hero, HowItWorks, Stats } from './components'
+import { CTA, Hero, HowItWorks, Stats } from './components'
 import { useHomePageContent } from './hooks'
+
+const homeNavLinks = [
+  { title: '价格', href: '#pricing', external: true },
+  { title: '模型', href: '#pricing', external: true },
+  { title: '稳定性', href: '#howto', external: true },
+  { title: '保障', href: '#howto', external: true },
+  { title: '使用流程', href: '#howto', external: true },
+] as const
 
 export function Home() {
   const { i18n, t } = useTranslation()
@@ -121,11 +130,38 @@ export function Home() {
   }
 
   return (
-    <PublicLayout showMainContainer={false}>
+    <PublicLayout
+      showMainContainer={false}
+      navLinks={[...homeNavLinks]}
+      logo={
+        <img
+          src='/nextoken-logo.png'
+          alt='nextoken'
+          className='size-full rounded-lg object-contain'
+        />
+      }
+      siteName='nextoken'
+      headerProps={{
+        className: 'nextoken-public-header',
+        preferCustomNavLinks: true,
+        showLanguageSwitcher: false,
+        showThemeSwitch: false,
+        showNotifications: false,
+        showAuthButtons: false,
+        rightContent: (
+          <>
+            <a href='/docs'>使用文档</a>
+            <a href='/about'>联系客服</a>
+            <Link to={isAuthenticated ? '/dashboard' : '/sign-up'}>
+              立即使用
+            </Link>
+          </>
+        ),
+      }}
+    >
       <div className='nextoken-home'>
         <Hero isAuthenticated={isAuthenticated} />
         <Stats />
-        <Features />
         <HowItWorks />
         <CTA isAuthenticated={isAuthenticated} />
         <Footer />

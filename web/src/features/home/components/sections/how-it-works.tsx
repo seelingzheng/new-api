@@ -36,23 +36,23 @@ export function HowItWorks() {
     <section className='nextoken-how' id='howto'>
       <div className='nextoken-container'>
         <AnimateInView
-          className='nextoken-section-heading nextoken-section-heading-centered'
+          className='nextoken-how-heading'
           animation='fade-up'
         >
           <span className='nextoken-section-kicker'>使用流程</span>
           <h2>3 步开始使用</h2>
           <p>流程简单，第一次使用也能快速完成。</p>
         </AnimateInView>
-        <div className='nextoken-step-grid'>
+        <div className='nextoken-how-grid'>
           {steps.map(({ num, title, desc, icon: Icon }, index) => (
             <AnimateInView
               key={num}
               delay={index * 130}
               animation='fade-up'
-              className='nextoken-step'
+              className='nextoken-how-card'
             >
-              <div className='nextoken-step-number'>{num}</div>
-              <div className='nextoken-step-icon'>
+              <div className='nextoken-how-number'>{num}</div>
+              <div className='nextoken-how-icon'>
                 <Icon className='size-6' strokeWidth={1.5} />
               </div>
               <h3>{title}</h3>

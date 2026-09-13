@@ -11,7 +11,6 @@ import {
   Activity,
   ArrowRight,
   BarChart3,
-  BookOpen,
   Boxes,
   Code2,
   Gauge,
@@ -21,7 +20,6 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
-import { useStatus } from '@/hooks/use-status'
 
 interface HeroProps {
   className?: string
@@ -57,9 +55,6 @@ const routeNodes = [
 
 export function Hero({ isAuthenticated = false }: HeroProps) {
   const { t } = useTranslation()
-  const { status } = useStatus()
-  const docsUrl =
-    (status?.docs_link as string | undefined) || 'https://docs.newapi.pro'
 
   return (
     <section className='nextoken-hero'>
@@ -87,27 +82,8 @@ export function Hero({ isAuthenticated = false }: HeroProps) {
               className='nextoken-button nextoken-button-primary'
               render={<Link to={isAuthenticated ? '/dashboard' : '/sign-up'} />}
             >
-              {t(isAuthenticated ? 'Go to Dashboard' : 'Get Started')}
+              {isAuthenticated ? t('Go to Dashboard') : '立即开始'}
               <ArrowRight className='size-4' />
-            </Button>
-            {!isAuthenticated && (
-              <Button
-                variant='outline'
-                className='nextoken-button nextoken-button-ghost'
-                render={<Link to='/pricing' />}
-              >
-                {t('View Pricing')}
-              </Button>
-            )}
-            <Button
-              variant='outline'
-              className='nextoken-button nextoken-button-ghost nextoken-docs-button'
-              render={
-                <a href={docsUrl} target='_blank' rel='noopener noreferrer' />
-              }
-            >
-              <BookOpen className='size-4' />
-              {t('Docs')}
             </Button>
           </div>
           <div
@@ -134,7 +110,9 @@ export function Hero({ isAuthenticated = false }: HeroProps) {
               <span className='nextoken-routing-online'>ONLINE</span>
             </div>
             <div className='nextoken-routing-core'>
-              <div className='nextoken-routing-core-mark'>N</div>
+              <div className='nextoken-routing-core-mark'>
+                <img src='/nextoken-logo.png' alt='' />
+              </div>
               <strong>NEXTOKEN</strong>
               <span>AI COMPUTE RELAY</span>
             </div>
