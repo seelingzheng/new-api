@@ -39,7 +39,7 @@ export function CTA({ isAuthenticated = false }: CTAProps) {
           </div>
           <Button
             className='nextoken-button nextoken-cta-button'
-            render={<Link to={isAuthenticated ? '/dashboard' : '/sign-up'} />}
+            render={<Link to={isAuthenticated ? '/dashboard' : '/sign-in'} />}
           >
             {t(isAuthenticated ? 'Go to Dashboard' : 'Get Started')}
             <ArrowRight className='size-4' />

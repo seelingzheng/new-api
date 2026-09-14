@@ -33,9 +33,13 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { PublicHeader } from '@/components/layout/components/public-header'
 
+import { CTA, Hero } from '../components'
 import { HOME_NAV_LINKS } from '../constants'
 
 vi.mock('@/components/dialog', () => ({ Dialog: () => null }))
+vi.mock('@/components/animate-in-view', () => ({
+  AnimateInView: (props: { children: React.ReactNode }) => props.children,
+}))
 vi.mock('@/components/language-switcher', () => ({
   LanguageSwitcher: () => null,
 }))
@@ -109,6 +113,35 @@ function createNavigationRouter() {
   })
 }
 
+function createHomepageActionsRouter(isAuthenticated: boolean) {
+  const rootRoute = createRootRoute({
+    component: () => (
+      <>
+        <Hero isAuthenticated={isAuthenticated} />
+        <CTA isAuthenticated={isAuthenticated} />
+      </>
+    ),
+  })
+  const makeDestination = (
+    path: '/' | '/dashboard' | '/sign-in' | '/sign-up'
+  ) =>
+    createRoute({
+      component: () => <div />,
+      getParentRoute: () => rootRoute,
+      path,
+    })
+
+  return createRouter({
+    history: createMemoryHistory({ initialEntries: ['/'] }),
+    routeTree: rootRoute.addChildren([
+      makeDestination('/'),
+      makeDestination('/dashboard'),
+      makeDestination('/sign-in'),
+      makeDestination('/sign-up'),
+    ]),
+  })
+}
+
 describe('homepage primary navigation', () => {
   it('defines exactly the three internal product routes in order', () => {
     expect(HOME_NAV_LINKS).toEqual([
@@ -118,6 +151,32 @@ describe('homepage primary navigation', () => {
     ])
     expect(HOME_NAV_LINKS.every((link) => !('external' in link))).toBe(true)
     expect(HOME_NAV_LINKS.some((link) => link.href.startsWith('#'))).toBe(false)
+  })
+
+  it('routes all unauthenticated homepage actions to sign in', async () => {
+    const router = createHomepageActionsRouter(false)
+    render(<RouterProvider router={router} />)
+
+    await waitFor(() => {
+      expect(screen.getAllByRole('button')).toHaveLength(2)
+    })
+
+    for (const link of screen.getAllByRole('button')) {
+      expect(link).toHaveAttribute('href', '/sign-in')
+    }
+  })
+
+  it('keeps authenticated homepage actions on the dashboard', async () => {
+    const router = createHomepageActionsRouter(true)
+    render(<RouterProvider router={router} />)
+
+    await waitFor(() => {
+      expect(screen.getAllByRole('button')).toHaveLength(2)
+    })
+
+    for (const link of screen.getAllByRole('button')) {
+      expect(link).toHaveAttribute('href', '/dashboard')
+    }
   })
 
   it('keeps backend dynamic links out of the homepage primary navigation', async () => {
@@ -141,6 +200,58 @@ describe('homepage primary navigation', () => {
     expect(
       screen.queryByRole('link', { name: 'About' })
     ).not.toBeInTheDocument()
+  })
+
+  it('places homepage links before the right-side documentation action', async () => {
+    const rootRoute = createRootRoute({
+      component: () => (
+        <PublicHeader
+          logo={<span>brand</span>}
+          navLinks={[...HOME_NAV_LINKS]}
+          preferCustomNavLinks
+          showNavigation={false}
+          showAuthButtons={false}
+          showLanguageSwitcher={false}
+          showNotifications={false}
+          showThemeSwitch={false}
+          rightContent={
+            <>
+              <div className='nextoken-home-nav-links'>
+                {HOME_NAV_LINKS.map((link) => (
+                  <a key={link.href} href={link.href}>
+                    {link.title}
+                  </a>
+                ))}
+              </div>
+              <a href='/docs'>Docs</a>
+            </>
+          }
+        />
+      ),
+    })
+    const router = createRouter({
+      history: createMemoryHistory({ initialEntries: ['/'] }),
+      routeTree: rootRoute.addChildren([
+        createRoute({
+          component: () => <div />,
+          getParentRoute: () => rootRoute,
+          path: '/',
+        }),
+      ]),
+    })
+    render(<RouterProvider router={router} />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('link', { name: 'Docs' })).toBeInTheDocument()
+    })
+
+    const rightContent = screen.getByRole('link', { name: 'Docs' }).parentElement
+    expect(rightContent).toBeTruthy()
+    expect(
+      [...(rightContent?.querySelectorAll('a') ?? [])].map(
+        (link) => link.textContent
+      )
+    ).toEqual(['Home', 'Console', 'Model Square', 'Docs'])
   })
 
   it('uses the same internal links in the mobile menu and closes after navigation', async () => {

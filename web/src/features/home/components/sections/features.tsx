@@ -54,7 +54,7 @@ const capabilities = [
   {
     num: '03',
     title: '用量控制',
-    desc: '在 New API 控制台统一查看令牌、费用和使用限制。',
+    desc: '在 NexToken 控制台统一查看令牌、费用和使用限制。',
     icon: BarChart3,
     tone: 'blue',
   },

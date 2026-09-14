@@ -129,23 +129,31 @@ export function Home() {
       logo={
         <img
           src='/nextoken-logo.png'
-          alt='nextoken'
+          alt='NexToken'
           className='size-full rounded-lg object-contain'
         />
       }
-      siteName='nextoken'
+      siteName='NexToken'
       headerProps={{
         className: 'nextoken-public-header',
         preferCustomNavLinks: true,
+        showNavigation: false,
         showLanguageSwitcher: false,
         showThemeSwitch: false,
         showNotifications: false,
         showAuthButtons: false,
         rightContent: (
           <>
+            <div className='nextoken-home-nav-links'>
+              {HOME_NAV_LINKS.map((link) => (
+                <Link key={link.href} to={link.href}>
+                  {t(link.title)}
+                </Link>
+              ))}
+            </div>
             <a href='/docs'>使用文档</a>
             <a href='/about'>联系客服</a>
-            <Link to={isAuthenticated ? '/dashboard' : '/sign-up'}>
+            <Link to={isAuthenticated ? '/dashboard' : '/sign-in'}>
               立即使用
             </Link>
           </>
@@ -157,7 +165,12 @@ export function Home() {
         <Stats />
         <HowItWorks />
         <CTA isAuthenticated={isAuthenticated} />
-        <Footer />
+        <Footer
+          logo='/nextoken-logo.png'
+          name='NexToken'
+          attributionName='NexToken'
+          attributionHref='https://github.com/seelingzheng/new-api'
+        />
       </div>
     </PublicLayout>
   )

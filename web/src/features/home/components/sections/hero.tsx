@@ -80,7 +80,7 @@ export function Hero({ isAuthenticated = false }: HeroProps) {
           <div className='nextoken-hero-actions'>
             <Button
               className='nextoken-button nextoken-button-primary'
-              render={<Link to={isAuthenticated ? '/dashboard' : '/sign-up'} />}
+              render={<Link to={isAuthenticated ? '/dashboard' : '/sign-in'} />}
             >
               {isAuthenticated ? t('Go to Dashboard') : '立即开始'}
               <ArrowRight className='size-4' />
