@@ -18,8 +18,14 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { useEffect, useCallback } from 'react'
 
+import { getStatus } from '@/lib/api'
 import { DEFAULT_SYSTEM_NAME, DEFAULT_LOGO } from '@/lib/constants'
 import { applyFaviconToDom } from '@/lib/dom-utils'
+import {
+  queryClient,
+  STATUS_QUERY_KEY,
+  STATUS_STALE_TIME,
+} from '@/lib/query-client'
 import {
   useSystemConfigStore,
   type CurrencyConfig,
@@ -102,15 +108,19 @@ export function mapStatusDataToConfig(
   }
 }
 
-// Fetch system config from API
+// Fetch system config through the shared query cache. `__root.tsx` calls this
+// on every boot while `useStatus()` and `main.tsx` ask for the same data; using
+// one key keeps it to a single `/api/status` round trip.
 async function fetchSystemConfig(): Promise<Partial<SystemConfig>> {
-  const response = await fetch('/api/status')
-  if (!response.ok) throw new Error('Failed to fetch status')
+  const data = await queryClient.fetchQuery({
+    queryKey: STATUS_QUERY_KEY,
+    queryFn: getStatus,
+    staleTime: STATUS_STALE_TIME,
+  })
 
-  const data: StatusApiResponse = await response.json()
-  if (!data.success) throw new Error('API returned error')
+  if (!data) throw new Error('API returned error')
 
-  return mapStatusDataToConfig(data.data)
+  return mapStatusDataToConfig(data as StatusApiResponse['data'])
 }
 
 // Preload image and return cleanup function

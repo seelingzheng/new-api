@@ -20,6 +20,10 @@ import { useQuery } from '@tanstack/react-query'
 
 import type { SystemStatus } from '@/features/auth/types'
 import { getStatus } from '@/lib/api'
+import {
+  STATUS_QUERY_KEY,
+  STATUS_STALE_TIME,
+} from '@/lib/query-client'
 import { useSystemConfigStore } from '@/stores/system-config-store'
 
 import { mapStatusDataToConfig } from './use-system-config'
@@ -39,7 +43,7 @@ function getInitialStatus(): SystemStatus | undefined {
 
 export function useStatus() {
   const { data, isLoading, error } = useQuery({
-    queryKey: ['status'],
+    queryKey: STATUS_QUERY_KEY,
     queryFn: async () => {
       const status = await getStatus()
       try {
@@ -69,7 +73,7 @@ export function useStatus() {
     // Use localStorage data as initial data
     placeholderData: getInitialStatus(),
     // Data becomes stale after 5 minutes
-    staleTime: 5 * 60 * 1000,
+    staleTime: STATUS_STALE_TIME,
     // Cache expires after 30 minutes
     gcTime: 30 * 60 * 1000,
   })

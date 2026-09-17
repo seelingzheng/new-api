@@ -16,24 +16,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import {
-  QueryCache,
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query'
+import { QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
-import { AxiosError } from 'axios'
-import i18next from 'i18next'
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
-import { toast } from 'sonner'
 
 import { getStatus } from '@/lib/api'
 import { installBuildMetadata } from '@/lib/build-metadata'
 import { applyFaviconToDom } from '@/lib/dom-utils'
 import '@/lib/dayjs'
 import { initializeFrontendCache } from '@/lib/frontend-cache'
-import { handleServerError } from '@/lib/handle-server-error'
+import {
+  queryClient,
+  setQueryErrorNavigator,
+  STATUS_QUERY_KEY,
+  STATUS_STALE_TIME,
+} from '@/lib/query-client'
 
 import { DirectionProvider } from './context/direction-provider'
 import { FontProvider } from './context/font-provider'
@@ -50,55 +48,18 @@ import './styles/index.css'
 initializeFrontendCache()
 installBuildMetadata()
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: (failureCount, error) => {
-        // eslint-disable-next-line no-console
-        if (import.meta.env.DEV) console.log({ failureCount, error })
-
-        if (failureCount >= 0 && import.meta.env.DEV) return false
-        if (failureCount > 3 && import.meta.env.PROD) return false
-
-        return !(
-          error instanceof AxiosError &&
-          [401, 403].includes(error.response?.status ?? 0)
-        )
-      },
-      // Keep focused tabs from silently re-running heavy pages like logs.
-      refetchOnWindowFocus: false,
-      staleTime: 10 * 1000, // 10s
-    },
-    mutations: {
-      onError: (error) => {
-        handleServerError(error)
-
-        if (error instanceof AxiosError) {
-          if (error.response?.status === 304) {
-            toast.error(i18next.t('Content not modified!'))
-          }
-        }
-      },
-    },
-  },
-  queryCache: new QueryCache({
-    onError: (error) => {
-      if (error instanceof AxiosError) {
-        if (error.response?.status === 500) {
-          toast.error(i18next.t('Internal Server Error!'))
-          router.navigate({ to: '/500' })
-        }
-      }
-    },
-  }),
-})
-
 // Create a new router instance
 const router = createRouter({
   routeTree,
   context: { queryClient },
   defaultPreload: 'intent',
   defaultPreloadStaleTime: 0,
+})
+
+// The shared QueryClient lives in its own module so non-React callers can reuse
+// its cache; wire the 500 redirect up now that the router exists.
+setQueryErrorNavigator(() => {
+  void router.navigate({ to: '/500' })
 })
 
 // Register the router instance for type safety
@@ -135,8 +96,15 @@ if (!rootElement) {
     } catch {
       /* empty */
     }
-    // Background refresh
-    getStatus()
+    // Background refresh. Going through the shared query cache means this boot
+    // fetch is reused by `__root.tsx` and `useStatus()` instead of each of them
+    // firing its own `/api/status` request (1.1-7.2s each, `no-store`).
+    queryClient
+      .fetchQuery({
+        queryKey: STATUS_QUERY_KEY,
+        queryFn: getStatus,
+        staleTime: STATUS_STALE_TIME,
+      })
       .then((s) => {
         if (s?.system_name) {
           apply(s.system_name as string)
