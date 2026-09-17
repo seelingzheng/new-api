@@ -151,7 +151,7 @@ export function Home() {
                 </Link>
               ))}
             </div>
-            <a href='/docs'>使用文档</a>
+            <a href='/docs/usedocs.html'>使用文档</a>
             <a href='/about'>联系客服</a>
             <Link to={isAuthenticated ? '/dashboard' : '/sign-in'}>
               立即使用
