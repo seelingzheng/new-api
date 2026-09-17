@@ -15,11 +15,60 @@
     />
 
     <meta name="theme-color" content="#070b1d" />
+    <!-- Critical CSS: paints the boot skeleton before any JS/CSS chunk lands.
+         Must stay tiny (<1 KB). Removed by src/main.tsx once React mounts. -->
+    <style id="boot-critical-css">
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+      #boot-skeleton {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #ffffff;
+      }
+      #boot-skeleton .boot-spinner {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 2px solid rgba(9, 9, 11, 0.14);
+        border-top-color: rgba(9, 9, 11, 0.6);
+        animation: boot-spin 0.7s linear infinite;
+      }
+      @keyframes boot-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (prefers-color-scheme: dark) {
+        #boot-skeleton {
+          background: #070b1d;
+        }
+        #boot-skeleton .boot-spinner {
+          border-color: rgba(255, 255, 255, 0.16);
+          border-top-color: rgba(255, 255, 255, 0.72);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #boot-skeleton .boot-spinner {
+          animation: none;
+        }
+      }
+    </style>
     <!--umami-->
     <!--Google Analytics-->
   </head>
 
   <body>
     <div id="root" translate="no" class="notranslate"></div>
+    <!-- Kept OUTSIDE #root: main.tsx only mounts React when #root is empty. -->
+    <div id="boot-skeleton" aria-hidden="true">
+      <div class="boot-spinner"></div>
+    </div>
   </body>
 </html>
