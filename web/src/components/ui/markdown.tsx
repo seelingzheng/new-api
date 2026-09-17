@@ -17,12 +17,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import DOMPurify from 'dompurify'
-import * as katex from 'katex'
 
 import 'katex/dist/katex.min.css'
 import { Marked, Renderer, type MarkedExtension, type Tokens } from 'marked'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
+import { getKatex, loadKatex } from '@/lib/katex'
 import { cn } from '@/lib/utils'
 
 interface MarkdownProps {
@@ -162,6 +162,12 @@ type SequenceMessage = {
   to?: string
 }
 
+/**
+ * Marker class emitted while the KaTeX chunk is still loading. `<Markdown>`
+ * looks for it to decide whether the async chunk has to be requested at all.
+ */
+const KATEX_PENDING_CLASS = 'katex-pending'
+
 function escapeHtml(value: string): string {
   return value
     .replaceAll('&', '&amp;')
@@ -181,6 +187,16 @@ function normalizeMathSource(source: string): string {
 }
 
 function renderMath(source: string, displayMode: boolean): string {
+  // KaTeX is a separate chunk (see lib/katex.ts). Until it arrives, fall back
+  // to the raw TeX so the rest of the document still paints on time.
+  const katex = getKatex()
+  if (!katex) {
+    const tex = escapeHtml(normalizeMathSource(source))
+    return displayMode
+      ? `<div class="${KATEX_PENDING_CLASS}">${tex}</div>`
+      : `<span class="${KATEX_PENDING_CLASS}">${tex}</span>`
+  }
+
   return katex.renderToString(normalizeMathSource(source), {
     displayMode,
     output: 'htmlAndMathml',
@@ -745,10 +761,32 @@ function renderMarkdown(markdown: string, breaks = false): string {
 }
 
 export function Markdown(props: MarkdownProps) {
+  // Bumped once the KaTeX chunk lands, which re-runs the memo below so the
+  // placeholders emitted by renderMath get replaced with real math.
+  const [katexReady, setKatexReady] = useState(() => getKatex() !== null)
+
   const html = useMemo(
     () => renderMarkdown(props.children, props.breaks),
-    [props.breaks, props.children]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [props.breaks, props.children, katexReady]
   )
+
+  useEffect(() => {
+    if (katexReady || !html.includes(KATEX_PENDING_CLASS)) return
+
+    let cancelled = false
+    loadKatex().then(
+      () => {
+        if (!cancelled) setKatexReady(true)
+      },
+      () => {
+        /* Keep the raw TeX placeholders if the chunk fails to load. */
+      }
+    )
+    return () => {
+      cancelled = true
+    }
+  }, [html, katexReady])
 
   return (
     <div
