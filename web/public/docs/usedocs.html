@@ -285,7 +285,6 @@ node -v</code></pre>
 
 <h3 id="ccs-enable">2.7 保存、启用并验证</h3>
 <p>填写完成后点击保存，然后在 NextToken 供应商卡片上点击 <strong>启用</strong>。</p>
-<figure class="doc-shot"><img alt="CC Switch 托盘切换 NextToken" loading="lazy" src="image/image-20260108004348993.png"/><figcaption>启用后也可以通过系统托盘快速在不同供应商之间切换。</figcaption></figure>
 <p>建议按下面顺序验证：</p>
 <ol>
 <li>退出当前正在运行的 Claude Code / Codex / OpenCode 等客户端。</li>
@@ -321,7 +320,7 @@ CC_SWITCH_GDK_BACKEND=x11 ./CC-Switch-*.AppImage</code></pre>
 <p>Codex 桌面端现在随新版 ChatGPT Desktop 提供，不需要再单独寻找一个 Codex 安装包。</p>
 <h4>3.2.1 Windows</h4><ol><li>打开安装 URL。</li><li>选择 Windows 下载。</li><li>双击安装包并完成安装。</li><li>打开 ChatGPT Desktop 并登录账号。</li><li>左上角切换到 <strong>Codex</strong>。</li></ol>
 <h4>3.2.2 macOS</h4><ol><li>打开安装 URL。</li><li>下载对应的 macOS 安装程序。</li><li>打开安装文件并安装到 Applications。</li><li>启动 ChatGPT Desktop 并登录。</li><li>左上角切换到 <strong>Codex</strong>。</li></ol>
-<figure class="doc-shot"><img alt="Codex 功能界面" loading="lazy" referrerpolicy="no-referrer" src="image/tablet_m_feature02.png"/><figcaption>Codex 项目与任务界面示例。进入后可添加本地项目并创建开发任务。</figcaption></figure>
+<figure class="doc-shot"><img alt="Codex 功能界面" loading="lazy" referrerpolicy="no-referrer" src="image/tablet_m_feature02.webp"/><figcaption>Codex 项目与任务界面示例。进入后可添加本地项目并创建开发任务。</figcaption></figure>
 <div class="note success"><strong>旧版 Codex App：</strong>如果电脑以前安装过独立 Codex App，更新到新版后会迁移到新的 ChatGPT Desktop；已有项目与历史通常会继续保留。</div>
 <h3 id="codex-cli">3.3 Codex CLI 安装</h3>
 <div class="chapter-meta"><b>URL：</b><a href="https://developers.openai.com/codex/cli/" target="_blank">https://developers.openai.com/codex/cli/</a>　·　<b>启动命令：</b><code>codex</code></div>
@@ -371,7 +370,7 @@ requires_openai_auth = true</code></pre>
 → 进入 Code
 → 选择本地项目目录</code></pre>
 <p class="url-line"><b>URL：</b><a href="https://code.claude.com/docs/en/desktop" target="_blank">https://code.claude.com/docs/en/desktop</a></p>
-<p>Claude Code 是 Anthropic 官方的 AI 编程助手，可以在终端中直接使用。</p><figure class="doc-shot"><img alt="Claude Code 终端界面" loading="lazy" referrerpolicy="no-referrer" src="image/anthropic-image.png"/><figcaption>Claude Code 官方终端界面示意。安装后第一次运行会进入终端交互流程。</figcaption></figure>
+<p>Claude Code 是 Anthropic 官方的 AI 编程助手，可以在终端中直接使用。</p><figure class="doc-shot"><img alt="Claude Code 终端界面" loading="lazy" referrerpolicy="no-referrer" src="image/anthropic-image.webp"/><figcaption>Claude Code 官方终端界面示意。安装后第一次运行会进入终端交互流程。</figcaption></figure>
 <div class="note warning">
                     由于 Claude 官方封锁了中国及香港用户，所以<strong>下载安装时需要翻墙至美国或日本</strong>。安装后即可不用翻墙直连我们的中转服务。
                 </div>
@@ -546,7 +545,7 @@ scoop install opencode</code></pre>
 <div class="note"><strong>Windows：</strong>官方文档更推荐 WSL，兼容性通常更完整。</div>
 <h3 id="opc-first">6.3 第一次启动</h3><div class="chapter-meta"><b>命令：</b><code>cd 项目目录</code> → <code>opencode</code></div>
 <pre><code>cd 你的项目目录
-opencode</code></pre><figure class="doc-shot"><img alt="OpenCode TUI 界面" loading="lazy" referrerpolicy="no-referrer" src="image/screenshot.webp"/><figcaption>OpenCode 官方 TUI 界面。安装完成后进入项目目录运行 opencode 即可进入该界面。</figcaption></figure>
+opencode</code></pre><figure class="doc-shot"><img alt="OpenCode TUI 界面" loading="lazy" referrerpolicy="no-referrer" src="image/screenshot.png"/><figcaption>OpenCode 官方 TUI 界面。安装完成后进入项目目录运行 opencode 即可进入该界面。</figcaption></figure>
 <h3 id="opc-config">6.4 配置 NextToken</h3><div class="chapter-meta"><b>配置文件：</b><code>~/.config/opencode/opencode.json</code>　·　<b>URL：</b><code>https://nextoken.win/v1</code></div>
 <pre><code>{
   "$schema": "https://opencode.ai/config.json",
