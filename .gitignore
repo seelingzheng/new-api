@@ -38,6 +38,10 @@ token_estimator_test.go
 skills-lock.json
 .playwright-mcp
 
+# Local GoAPI deployment backups. Archives may contain production data.
+/ops/backups/*
+!/ops/backups/.gitkeep
+
 # Local-only live probes and scratch test workspaces.
 .local-tests/
 relaykit/relayconvert/chat_responses_live_local_test.go

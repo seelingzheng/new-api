@@ -16,35 +16,59 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import i18n from 'i18next'
+import i18n, { type BackendModule, type ReadCallback } from 'i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 import { initReactI18next } from 'react-i18next'
 
 import { convertDetectedLanguage } from './languages'
-import en from './locales/en.json'
-import fr from './locales/fr.json'
-import ja from './locales/ja.json'
-import ru from './locales/ru.json'
-import vi from './locales/vi.json'
-import zhTW from './locales/zh-TW.json'
-import zhCN from './locales/zh.json'
 
-export const resources = {
-  en,
-  zhCN,
-  fr,
-  ru,
-  ja,
-  vi,
-  zhTW,
+const localeLoaders = {
+  en: () => import('./locales/en.json'),
+  zhCN: () => import('./locales/zh.json'),
+  fr: () => import('./locales/fr.json'),
+  ru: () => import('./locales/ru.json'),
+  ja: () => import('./locales/ja.json'),
+  vi: () => import('./locales/vi.json'),
+  zhTW: () => import('./locales/zh-TW.json'),
 } as const
 
+type InterfaceLanguage = keyof typeof localeLoaders
+
+const localeBackend: BackendModule = {
+  type: 'backend',
+  init() {},
+  read(language: string, _namespace: string, callback: ReadCallback) {
+    const loader = localeLoaders[language as InterfaceLanguage]
+    if (!loader) {
+      callback(new Error(`Unsupported interface language: ${language}`), null)
+      return
+    }
+
+    void Promise.resolve(loader())
+      .then((module) => {
+        // i18next's backend contract requires a Node-style read callback.
+        // oxlint-disable-next-line promise/no-callback-in-promise
+        callback(null, module.default)
+      })
+      .catch((error: unknown) => {
+        // oxlint-disable-next-line promise/no-callback-in-promise
+        callback(error instanceof Error ? error : new Error(String(error)), null)
+      })
+  },
+}
+
+const detectedLanguage =
+  typeof navigator === 'undefined'
+    ? undefined
+    : convertDetectedLanguage(navigator.languages?.[0] ?? navigator.language)
+
 i18n
+  .use(localeBackend)
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    resources,
     fallbackLng: 'en',
+    lng: detectedLanguage,
     supportedLngs: ['en', 'zhCN', 'fr', 'ru', 'ja', 'vi', 'zhTW'],
     load: 'currentOnly',
     nsSeparator: false, // Allow literal colons in keys (e.g., URLs, labels)

@@ -77,9 +77,11 @@ api.get = ((url: string, config: ApiRequestConfig = {}) => {
 function redirectToSignIn(): void {
   if (
     typeof window !== 'undefined' &&
-    window.location.pathname !== '/sign-in'
+    window.location.pathname !== '/sign-in' &&
+    window.location.pathname !== '/login'
   ) {
-    window.location.replace('/sign-in')
+    const redirect = `${window.location.pathname}${window.location.search}${window.location.hash}`
+    window.location.replace(`/sign-in?redirect=${encodeURIComponent(redirect)}`)
   }
 }
 
