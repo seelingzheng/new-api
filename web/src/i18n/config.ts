@@ -48,7 +48,7 @@ const localeBackend: BackendModule = {
       .then((module) => {
         // i18next's backend contract requires a Node-style read callback.
         // oxlint-disable-next-line promise/no-callback-in-promise
-        callback(null, module.default)
+        callback(null, module.default.translation)
       })
       .catch((error: unknown) => {
         // oxlint-disable-next-line promise/no-callback-in-promise
