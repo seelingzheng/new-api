@@ -29,7 +29,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 
-import { type TopNavLink } from '../types'
+import type { TopNavLink } from '../types'
 
 type TopNavProps = React.HTMLAttributes<HTMLElement> & {
   links: TopNavLink[]
@@ -71,7 +71,7 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
                     external ? (
                       <a
                         href={href}
-                        target='_blank'
+                        target={href.startsWith('http') ? '_blank' : undefined}
                         rel='noopener noreferrer'
                         className={!isActive ? 'text-muted-foreground' : ''}
                       >
@@ -87,7 +87,7 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
                       </Link>
                     )
                   }
-                ></DropdownMenuItem>
+                />
               )
             )}
           </DropdownMenuContent>
@@ -107,7 +107,7 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
             <a
               key={`${title}-${href}`}
               href={href}
-              target='_blank'
+              target={href.startsWith('http') ? '_blank' : undefined}
               rel='noopener noreferrer'
               className={`hover:text-primary text-sm font-medium transition-colors ${isActive ? '' : 'text-muted-foreground'}`}
             >

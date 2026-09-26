@@ -55,9 +55,6 @@ export function useTopNavLinks(): TopNavLink[] {
     )
   }, [status])
 
-  // Documentation link (may be external)
-  const docsLink: string | undefined = status?.docs_link as string | undefined
-
   const isAuthed = !!auth?.user
 
   const links: TopNavLink[] = []
@@ -79,20 +76,21 @@ export function useTopNavLinks(): TopNavLink[] {
     links.push({ title: t('Model Square'), href: '/pricing', requiresAuth })
   }
 
+  // Keep the self-hosted usage guide available after signing in, even when
+  // the legacy docs module is disabled in the backend navigation settings.
+  if (isAuthed || modules?.docs !== false) {
+    links.push({
+      title: t('Usage Docs'),
+      href: '/docs/usedocs.html',
+      external: true,
+    })
+  }
+
   // Rankings
   const rankings = modules?.rankings
   if (rankings && typeof rankings === 'object' && rankings.enabled) {
     const requiresAuth = rankings.requireAuth && !isAuthed
     links.push({ title: t('Rankings'), href: '/rankings', requiresAuth })
-  }
-
-  // Docs (supports external links)
-  if (modules?.docs !== false) {
-    if (docsLink) {
-      links.push({ title: t('Docs'), href: docsLink, external: true })
-    } else {
-      links.push({ title: t('Docs'), href: '/docs' })
-    }
   }
 
   // About

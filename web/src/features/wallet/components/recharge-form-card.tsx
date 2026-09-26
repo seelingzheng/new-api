@@ -34,7 +34,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { formatNumber } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 import {
@@ -117,6 +116,7 @@ export function RechargeFormCard({
 
   useEffect(() => {
     // Empty string must survive, otherwise the field can never be cleared
+    // eslint-disable-next-line react/set-state-in-effect
     setLocalAmount((prev) =>
       prev === '' && topupAmount === 0 ? prev : topupAmount.toString()
     )
@@ -257,7 +257,7 @@ export function RechargeFormCard({
                         >
                           <div className='flex w-full items-center justify-between'>
                             <div className='text-base font-semibold sm:text-lg'>
-                              {formatNumber(displayValue)}
+                              {formatCurrency(displayValue)}
                             </div>
                             {hasDiscount && (
                               <div className='text-xs font-medium text-green-600'>

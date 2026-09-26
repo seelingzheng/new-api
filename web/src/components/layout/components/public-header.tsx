@@ -239,8 +239,14 @@ export function PublicHeader(props: PublicHeaderProps) {
                       <a
                         key={link.href}
                         href={link.href}
-                        target={link.href.startsWith('#') ? undefined : '_blank'}
-                        rel={link.href.startsWith('#') ? undefined : 'noopener noreferrer'}
+                        target={
+                          link.href.startsWith('http') ? '_blank' : undefined
+                        }
+                        rel={
+                          link.href.startsWith('http')
+                            ? 'noopener noreferrer'
+                            : undefined
+                        }
                         aria-disabled={link.disabled}
                         tabIndex={link.disabled ? -1 : undefined}
                         onClick={(event) => handleNavLinkClick(event, link)}
@@ -311,7 +317,6 @@ export function PublicHeader(props: PublicHeaderProps) {
                   )}
                 </>
               )}
-
             </div>
 
             {rightContent && (
@@ -389,8 +394,12 @@ export function PublicHeader(props: PublicHeaderProps) {
                   <a
                     key={link.href}
                     href={link.href}
-                    target='_blank'
-                    rel='noopener noreferrer'
+                    target={link.href.startsWith('http') ? '_blank' : undefined}
+                    rel={
+                      link.href.startsWith('http')
+                        ? 'noopener noreferrer'
+                        : undefined
+                    }
                     aria-disabled={link.disabled}
                     tabIndex={link.disabled ? -1 : undefined}
                     onClick={(event) => handleNavLinkClick(event, link, true)}
