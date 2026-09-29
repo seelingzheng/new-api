@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { Link } from '@tanstack/react-router'
-import { useCallback, useEffect, useRef } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { PublicLayout } from '@/components/layout'
@@ -27,9 +27,13 @@ import { useTheme } from '@/context/theme-provider'
 import { isLikelyHtml } from '@/lib/content-format'
 import { useAuthStore } from '@/stores/auth-store'
 
-import { CTA, Hero, HowItWorks, Stats } from './components'
+import { Gateway, Hero, HowItWorks } from './components'
 import { HOME_NAV_LINKS } from './constants'
 import { useHomePageContent } from './hooks'
+
+const DeepSpaceBackground = lazy(
+  () => import('./components/deep-space-background')
+)
 
 export function Home() {
   const { i18n, t } = useTranslation()
@@ -151,20 +155,23 @@ export function Home() {
                 </Link>
               ))}
             </div>
-            <a href='/docs/usedocs.html'>使用文档</a>
-            <a href='/about'>联系客服</a>
+            <a href='/docs/usedocs.html'>{t('Usage Docs')}</a>
+            <a href='/about'>{t('Contact Support')}</a>
             <Link to={isAuthenticated ? '/dashboard' : '/sign-in'}>
-              立即使用
+              {isAuthenticated ? t('Go to Dashboard') : t('Get Started')}
             </Link>
           </>
         ),
       }}
     >
       <div className='nextoken-home'>
+        <Suspense fallback={null}>
+          <DeepSpaceBackground />
+        </Suspense>
+        <div className='nextoken-ambient-glow' aria-hidden='true' />
         <Hero isAuthenticated={isAuthenticated} />
-        <Stats />
+        <Gateway />
         <HowItWorks />
-        <CTA isAuthenticated={isAuthenticated} />
         <Footer
           logo='/nextoken-logo.png'
           name='NexToken'

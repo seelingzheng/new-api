@@ -33,7 +33,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { PublicHeader } from '@/components/layout/components/public-header'
 
-import { CTA, Hero } from '../components'
+import { Hero } from '../components'
 import { HOME_NAV_LINKS } from '../constants'
 
 vi.mock('@/components/dialog', () => ({ Dialog: () => null }))
@@ -115,12 +115,7 @@ function createNavigationRouter() {
 
 function createHomepageActionsRouter(isAuthenticated: boolean) {
   const rootRoute = createRootRoute({
-    component: () => (
-      <>
-        <Hero isAuthenticated={isAuthenticated} />
-        <CTA isAuthenticated={isAuthenticated} />
-      </>
-    ),
+    component: () => <Hero isAuthenticated={isAuthenticated} />,
   })
   const makeDestination = (
     path: '/' | '/dashboard' | '/sign-in' | '/sign-up'
@@ -158,7 +153,7 @@ describe('homepage primary navigation', () => {
     render(<RouterProvider router={router} />)
 
     await waitFor(() => {
-      expect(screen.getAllByRole('button')).toHaveLength(2)
+      expect(screen.getAllByRole('button')).toHaveLength(1)
     })
 
     for (const link of screen.getAllByRole('button')) {
@@ -171,7 +166,7 @@ describe('homepage primary navigation', () => {
     render(<RouterProvider router={router} />)
 
     await waitFor(() => {
-      expect(screen.getAllByRole('button')).toHaveLength(2)
+      expect(screen.getAllByRole('button')).toHaveLength(1)
     })
 
     for (const link of screen.getAllByRole('button')) {
@@ -245,7 +240,9 @@ describe('homepage primary navigation', () => {
       expect(screen.getByRole('link', { name: 'Docs' })).toBeInTheDocument()
     })
 
-    const rightContent = screen.getByRole('link', { name: 'Docs' }).parentElement
+    const rightContent = screen.getByRole('link', {
+      name: 'Docs',
+    }).parentElement
     expect(rightContent).toBeTruthy()
     expect(
       [...(rightContent?.querySelectorAll('a') ?? [])].map(

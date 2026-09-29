@@ -7,56 +7,62 @@ the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 */
 import { KeyRound, Play, Settings2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { AnimateInView } from '@/components/animate-in-view'
 
 const steps = [
   {
     num: '1',
-    title: '注册并充值',
-    desc: '完成注册，领取体验金或按需充值。',
-    icon: Settings2,
+    title: 'Register and top up',
+    description:
+      'Create an account, claim trial credits, or top up to prepare for model calls.',
+    Icon: Settings2,
   },
   {
     num: '2',
-    title: '获取使用凭证',
-    desc: '进入控制台获取对应产品的使用信息。',
-    icon: KeyRound,
+    title: 'Get your credentials',
+    description:
+      'Create an API key in the console and copy the unified endpoint and call parameters.',
+    Icon: KeyRound,
   },
   {
     num: '3',
-    title: '开始使用',
-    desc: '选择支持的工具和模型，直接开始 AI Coding。',
-    icon: Play,
+    title: 'Pick a model and start',
+    description:
+      'Choose the model you need, add the credentials to your app or AI tool, and start calling.',
+    Icon: Play,
   },
 ] as const
 
 export function HowItWorks() {
+  const { t } = useTranslation()
+
   return (
-    <section className='nextoken-how' id='howto'>
+    <section className='nextoken-section nextoken-steps' id='howto'>
       <div className='nextoken-container'>
-        <AnimateInView
-          className='nextoken-how-heading'
-          animation='fade-up'
-        >
-          <span className='nextoken-section-kicker'>使用流程</span>
-          <h2>3 步开始使用</h2>
-          <p>流程简单，第一次使用也能快速完成。</p>
+        <AnimateInView className='nextoken-section-head' animation='fade-up'>
+          <div className='nextoken-section-kicker'>{t('Getting started')}</div>
+          <h2>{t('3 steps to get started')}</h2>
+          <p>{t('A short flow that first-time users can finish quickly.')}</p>
         </AnimateInView>
-        <div className='nextoken-how-grid'>
-          {steps.map(({ num, title, desc, icon: Icon }, index) => (
+
+        <div className='nextoken-steps-grid'>
+          {steps.map(({ num, title, description, Icon }, index) => (
             <AnimateInView
               key={num}
-              delay={index * 130}
+              className='nextoken-step'
               animation='fade-up'
-              className='nextoken-how-card'
+              delay={index * 130}
             >
-              <div className='nextoken-how-number'>{num}</div>
-              <div className='nextoken-how-icon'>
+              <span className='nextoken-step-number' aria-hidden='true'>
+                {num}
+              </span>
+              <span className='nextoken-step-icon' aria-hidden='true'>
                 <Icon className='size-6' strokeWidth={1.5} />
-              </div>
-              <h3>{title}</h3>
-              <p>{desc}</p>
+              </span>
+              <h3>{t(title)}</h3>
+              <p>{t(description)}</p>
             </AnimateInView>
           ))}
         </div>
