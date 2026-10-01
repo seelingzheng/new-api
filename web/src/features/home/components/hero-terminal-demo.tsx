@@ -227,10 +227,11 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
             const isActive = index === activeIndex
             return (
               <button
+                type='button'
                 key={item.id}
                 onClick={() => handleSelect(index)}
                 className={cn(
-                  'relative -mb-px flex items-center gap-1.5 border-b-2 px-2.5 py-2.5 text-[11px] font-medium tracking-wide transition-colors sm:px-3 sm:text-xs',
+                  'relative -mb-px flex min-h-11 items-center gap-1.5 border-b-2 px-2.5 py-2.5 text-[11px] font-medium tracking-wide transition-colors sm:px-3 sm:text-xs',
                   isActive
                     ? `${tone.activeBorder} ${tone.activeText}`
                     : 'text-foreground/40 hover:text-foreground/70 border-transparent'

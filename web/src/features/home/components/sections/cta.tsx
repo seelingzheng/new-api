@@ -56,7 +56,7 @@ export function CTA(props: CTAProps) {
         <h2 className='text-2xl leading-tight font-bold tracking-tight md:text-4xl'>
           {t('Ready to simplify')}
           <br />
-          <span className='bg-gradient-to-r from-primary via-chart-2 to-chart-3 bg-clip-text text-transparent'>
+          <span className='from-primary via-chart-2 to-chart-3 bg-gradient-to-r bg-clip-text text-transparent'>
             {t('your AI integration?')}
           </span>
         </h2>
@@ -65,14 +65,17 @@ export function CTA(props: CTAProps) {
             'Deploy your own gateway and start routing requests through your configured upstream services.'
           )}
         </p>
-        <div className='mt-8 flex items-center justify-center gap-3'>
-          <Button className='group rounded-lg' render={<Link to='/sign-up' />}>
+        <div className='mt-8 flex flex-wrap items-center justify-center gap-3'>
+          <Button
+            className='group h-11 rounded-lg px-5 text-sm font-medium'
+            render={<Link to='/sign-up' />}
+          >
             {t('Get Started')}
             <ArrowRight className='ml-1 size-3.5 transition-transform duration-200 group-hover:translate-x-0.5' />
           </Button>
           <Button
             variant='outline'
-            className='border-border/50 hover:border-border hover:bg-muted/50 rounded-lg'
+            className='border-border/50 hover:border-border hover:bg-muted/50 h-11 rounded-lg px-5 text-sm font-medium'
             render={<Link to='/pricing' />}
           >
             {t('View Pricing')}
