@@ -14,7 +14,11 @@
       content="Unified AI API gateway and admin dashboard."
     />
 
-    <meta name="theme-color" content="#fff" />
+    <!-- Matches the default --background of each mode so the browser chrome
+         does not flash white before the SPA paints. Mirrors OS preference
+         only; a manually overridden in-app theme is not reflected here. -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7fafe" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#090d16" />
     <!--umami-->
     <!--Google Analytics-->
   </head>
