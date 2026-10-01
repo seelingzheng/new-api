@@ -27,8 +27,7 @@ For commercial licensing, please contact support@quantumnous.com
 // Exits non-zero when any assertion fails.
 import { spawn } from 'node:child_process'
 
-const CHROME =
-  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 const PORT = 9337
 const DEBUG = `http://127.0.0.1:${PORT}`
 const APP = process.argv[2] ?? 'http://127.0.0.1:3000'
@@ -44,6 +43,37 @@ const TARGETS = [
   { name: 'protocol tab', selector: 'button.border-b-2' },
   { name: 'closing CTA', selector: "section a[href='/sign-up']" },
 ]
+
+// A single CJK glyph stranded on its own line reads as a broken headline.
+// text-wrap: balance is what keeps the hero title's line widths even.
+const heroBalanceProbe = `(() => {
+  const heading = document.querySelector('h1')
+  if (!heading) return JSON.stringify({ found: false })
+  const widths = []
+  const walk = (node) => {
+    for (const child of node.childNodes) {
+      if (child.nodeType === 3 && child.textContent.trim()) {
+        const range = document.createRange()
+        range.selectNodeContents(child)
+        for (const rect of range.getClientRects()) {
+          if (rect.width >= 1) widths.push(Math.round(rect.width))
+        }
+      } else if (child.nodeType === 1) {
+        walk(child)
+      }
+    }
+  }
+  walk(heading)
+  const widest = Math.max(0, ...widths)
+  return JSON.stringify({
+    found: true,
+    widths,
+    narrowestRatio: widest
+      ? +(Math.min(...widths) / widest).toFixed(2)
+      : 0,
+  })
+})()
+`
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 const getJson = async (path) => (await fetch(DEBUG + path)).json()
@@ -134,8 +164,7 @@ const auditPage = (selectorList, min) => `
 })()
 `
 
-const panelProbe = `
-(() => {
+const panelProbe = `(() => {
   const trigger = document.querySelector('header button[aria-controls]')
   if (!trigger) return JSON.stringify({ found: false })
   const panelId = trigger.getAttribute('aria-controls')
@@ -198,7 +227,9 @@ async function main() {
       failures.push(`${path}: app never rendered`)
       continue
     }
-    const report = JSON.parse(await evaluate(sessionId, auditPage(TARGETS, MIN_TARGET_PX)))
+    const report = JSON.parse(
+      await evaluate(sessionId, auditPage(TARGETS, MIN_TARGET_PX))
+    )
     // A control may legitimately not exist on some pages; it must be measured
     // correctly on the pages where it does appear, and appear at least once.
     const problems = report.controls.filter((c) => c.found && !c.ok)
@@ -208,7 +239,8 @@ async function main() {
       seen.set(key, (seen.get(key) ?? true) && control.ok)
       observed.add(key)
     }
-    if (report.overflowX) problems.push({ name: 'page overflow', w: report.scrollWidth })
+    if (report.overflowX)
+      problems.push({ name: 'page overflow', w: report.scrollWidth })
     console.log(
       `${path} ${report.innerWidth}px overflow=${report.overflowX} ` +
         report.controls
@@ -233,6 +265,17 @@ async function main() {
       }
       if (!panel.opened?.focusableWhileInThisState) {
         failures.push('/ : opened nav panel is not reachable by keyboard')
+      }
+      const hero = JSON.parse(await evaluate(sessionId, heroBalanceProbe))
+      console.log('hero', JSON.stringify(hero))
+      // The headline's second phrase is legitimately shorter by design, so the
+      // rule is "no stranded fragment", not "all lines equal".
+      if (!hero.found) {
+        failures.push('/ : hero title not found')
+      } else if (hero.narrowestRatio < 0.35) {
+        failures.push(
+          `/ : hero title strands a line at ${hero.narrowestRatio} of the widest (${hero.widths.join('/')})`
+        )
       }
     }
   }
