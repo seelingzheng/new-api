@@ -43,7 +43,10 @@ function Counter(props: CounterProps) {
     if (!el) return
     const start = performance.now()
     const step = (now: number) => {
-      const progress = Math.min((now - start) / duration, 1)
+      // A rAF timestamp is the frame's start time and can precede `start`, so
+      // the ratio must be clamped at both ends or the eased value goes negative
+      // and the counter renders "-2+".
+      const progress = Math.min(Math.max((now - start) / duration, 0), 1)
       const eased = 1 - Math.pow(1 - progress, 3)
       el.textContent = `${prefix}${formatValue(eased * end)}${suffix}`
       if (progress < 1) requestAnimationFrame(step)
