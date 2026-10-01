@@ -730,3 +730,117 @@ For commercial licensing, please contact support@quantumnous.com
     display: none;
   }
 }
+
+/* ── Landing hero aurora ────────────────────────────────────────────────
+ * Token-driven so the hero follows the active theme and any preset, instead
+ * of pinning itself to one hard-coded blue. Lives in the stylesheet rather
+ * than an inline style attribute per web/AGENTS.md 3.10.
+ */
+.hero-aurora {
+  background:
+    radial-gradient(
+      ellipse 70% 55% at 16% 12%,
+      color-mix(in oklch, var(--primary) 42%, transparent) 0%,
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 62% 46% at 84% 8%,
+      color-mix(in oklch, var(--chart-2) 36%, transparent) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 52% 40% at 44% 92%,
+      color-mix(in oklch, var(--chart-3) 30%, transparent) 0%,
+      transparent 72%
+    );
+}
+
+/* Depth for the hero's terminal / gateway panel: one wide cast shadow tinted
+ * by the active primary plus a single top inner highlight. */
+.hero-panel-depth {
+  box-shadow:
+    0 28px 70px -32px
+      color-mix(in oklch, var(--primary) 28%, transparent),
+    inset 0 1px 0 color-mix(in oklch, var(--foreground) 7%, transparent);
+}
+
+/* ── Ambient deep-space backdrop ────────────────────────────────────────
+ * The static wash is the default appearance of <SpaceField />: it is painted
+ * without JavaScript, so the page reads as designed before the optional
+ * particle enhancement loads, and stays correct if that enhancement never
+ * arrives (offline deployment, blocked CDN, reduced-motion preference).
+ */
+.space-field {
+  background:
+    radial-gradient(
+      ellipse 80% 50% at 50% -8%,
+      color-mix(in oklch, var(--primary) 22%, transparent) 0%,
+      transparent 62%
+    ),
+    radial-gradient(
+      ellipse 60% 42% at 82% 4%,
+      color-mix(in oklch, var(--chart-2) 16%, transparent) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 55% 40% at 12% 12%,
+      color-mix(in oklch, var(--chart-3) 13%, transparent) 0%,
+      transparent 58%
+    );
+}
+
+.space-field canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .space-field canvas {
+    display: none;
+  }
+}
+
+/* ── Horizontal vendor marquee ──────────────────────────────────────────
+ * Each row holds two identical halves and translates by -50%, so the seam is
+ * invisible. The reverse row runs the other way. With reduced motion the
+ * animation is dropped and the first half stays visible and readable.
+ */
+@keyframes marquee-forward {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-reverse {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-forward 42s linear infinite;
+  will-change: transform;
+}
+
+.marquee-track[data-direction='reverse'] {
+  animation-name: marquee-reverse;
+  animation-duration: 50s;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track,
+  .marquee-track[data-direction='reverse'] {
+    animation: none;
+  }
+}
